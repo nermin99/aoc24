@@ -1,28 +1,57 @@
 export const deepCopy = (obj) => JSON.parse(JSON.stringify(obj))
 
-export const matrixBuild = (rows: number, cols: number, fill: any = '.') => {
-  const matrix = Array.from({ length: rows }, () =>
-    Array.from({ length: cols }, () => (typeof fill === 'object' ? deepCopy(fill) : fill))
-  )
-  // @ts-ignore
-  matrix.__proto__.toString = function () {
-    return this.map((row) => row.join('') + '\n').join('')
+export class Matrix {
+  matrix = [[]]
+
+  constructor(matrix: any[][] = [[]]) {
+    this.matrix = matrix
   }
-  return matrix
+
+  static build(rows: any, cols: any, fill: any = '.') {
+    const newMatrix = Array.from({ length: rows }, () =>
+      Array.from({ length: cols }, () => (typeof fill === 'object' ? deepCopy(fill) : fill))
+    )
+    // @ts-ignore
+    newMatrix.__proto__.toString = function () {
+      return this.map((row) => row.join(' ') + '\n').join('')
+    }
+    return newMatrix
+  }
+
+  rotateCW() {
+    this.matrix = this.matrix[0].map((_, colIndex) =>
+      this.matrix.map((row) => row[colIndex]).reverse()
+    )
+    return this
+  }
+
+  rotateCCW() {
+    this.matrix = this.matrix[0].map((_, colIndex) =>
+      this.matrix.map((row) => row[row.length - 1 - colIndex])
+    )
+    return this
+  }
+
+  flipHorizontal() {
+    this.matrix.reverse()
+    return this
+  }
+
+  flipVertical() {
+    this.matrix = this.matrix.map((row) => row.reverse())
+    return this
+  }
+
+  transpose() {
+    this.matrix = this.matrix[0].map((_, colIndex) => this.matrix.map((row) => row[colIndex]))
+    return this
+  }
+
+  toArray() {
+    return this.matrix.reduce((acc, cur) => [...acc, ...cur], [])
+  }
+
+  toString() {
+    return this.matrix.map((row) => row.join(' ') + '\n').join('')
+  }
 }
-
-export const matrixTranspose = (matrix: any[][]) =>
-  matrix[0].map((_, colIndex) => matrix.map((row) => row[colIndex]))
-
-export const matrixRotateCW = (matrix: any[][]) =>
-  matrix[0].map((_, colIndex) => matrix.map((row) => row[colIndex]).reverse())
-
-export const matrixRotateCCW = (matrix: any[][]) =>
-  matrix[0].map((_, colIndex) => matrix.map((row) => row[row.length - 1 - colIndex]))
-
-export const matrixFlipHorizontal = (matrix: any[][]) => matrix.reverse()
-
-export const matrixFlipVertical = (matrix: any[][]) => matrix.map((row) => row.reverse())
-
-export const matrixToString = (matrix: any[][]) =>
-  matrix.map((row) => row.join(' ') + '\n').join('')
