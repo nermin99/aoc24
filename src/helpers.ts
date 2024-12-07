@@ -112,49 +112,24 @@ export class Matrix {
   }
 
   traverseBackwardDiagonals(word: string, reversed = false) {
+    // Inspired from https://stackoverflow.com/a/21346447/7012917
     let count = 0
     const searchWord = reversed ? word.split('').reverse().join('') : word
+    const regexp = new RegExp(`(?=${searchWord})`, 'gm') // Include overlapping matches
     const rows = this.matrix.length
     const cols = this.matrix[0].length
 
-    // Check diagonals starting from each row in the last column
-    for (let startRow = 0; startRow < rows; startRow++) {
+    for (let k = -(cols - 1); k <= rows - 1; k++) {
+      let yMin = Math.max(0, k)
+      let yMax = Math.min(rows - 1, k + (cols - 1))
       let diagonalString = ''
-      let row = startRow,
-        col = cols - 1
-
-      while (row < rows && col >= 0) {
-        diagonalString += this.matrix[row][col]
-        row++
-        col--
+      for (let y = yMin; y <= yMax; y++) {
+        let x = y - k
+        diagonalString += this.matrix[y][x]
       }
 
-      let index = diagonalString.indexOf(searchWord)
-      while (index !== -1) {
-        count++
-        index = diagonalString.indexOf(searchWord, index + 1)
-      }
+      count += diagonalString.match(regexp)?.length ?? 0
     }
-
-    // Check diagonals starting from each column in the first row
-    for (let startCol = cols - 2; startCol >= 0; startCol--) {
-      let diagonalString = ''
-      let row = 0,
-        col = startCol
-
-      while (row < rows && col >= 0) {
-        diagonalString += this.matrix[row][col]
-        row++
-        col--
-      }
-
-      let index = diagonalString.indexOf(searchWord)
-      while (index !== -1) {
-        count++
-        index = diagonalString.indexOf(searchWord, index + 1)
-      }
-    }
-
     return count
   }
 
