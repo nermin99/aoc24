@@ -1,6 +1,6 @@
 const fs = require('fs')
 
-const data: string = fs.readFileSync(__dirname + '/data.txt', 'utf8')
+const input: string = fs.readFileSync(__dirname + '/input.txt', 'utf8')
 
 const sumMultiplyMatches = (matches: string[]) => {
   const numbers = matches.map((str) =>
@@ -13,14 +13,14 @@ const sumMultiplyMatches = (matches: string[]) => {
 }
 
 function a() {
-  const matches = data.match(/mul\(\d+,\d+\)/gm)
+  const matches = input.match(/mul\(\d+,\d+\)/gm)
   const total = sumMultiplyMatches(matches)
   console.log(total)
 }
 a()
 
 function b() {
-  const matches = data.match(/mul\(\d+,\d+\)|don't\(\)|do\(\)/gm)
+  const matches = input.match(/mul\(\d+,\d+\)|don't\(\)|do\(\)/gm)
   const enabledMatches = []
   let enabled = true
   for (const match of matches) {

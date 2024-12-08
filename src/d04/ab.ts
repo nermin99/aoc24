@@ -1,12 +1,12 @@
 const fs = require('fs')
 const { Matrix } = require('../helpers')
 
-const data: string = fs
-  .readFileSync(__dirname + '/data.txt', 'utf8')
+const input: string = fs
+  .readFileSync(__dirname + '/input.txt', 'utf8')
   .split('\n')
   .map((row) => row.split(''))
 
-const matrix = new Matrix(data)
+const matrix = new Matrix(input)
 
 function a() {
   const word = 'XMAS'
