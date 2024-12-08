@@ -5,17 +5,18 @@ export class Matrix {
 
   constructor(matrix: any[][] = [[]]) {
     this.matrix = matrix
+
+    // @ts-ignore
+    this.matrix.__proto__.toString = function () {
+      return this.map((row) => row.join(' ') + '\n').join('')
+    }
   }
 
   static build(rows: any, cols: any, fill: any = '.') {
     const newMatrix = Array.from({ length: rows }, () =>
       Array.from({ length: cols }, () => (typeof fill === 'object' ? deepCopy(fill) : fill))
     )
-    // @ts-ignore
-    newMatrix.__proto__.toString = function () {
-      return this.map((row) => row.join(' ') + '\n').join('')
-    }
-    return newMatrix
+    return new Matrix(newMatrix)
   }
 
   rotateCW() {
