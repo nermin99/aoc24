@@ -1,13 +1,20 @@
 export const deepCopy = (obj) => JSON.parse(JSON.stringify(obj))
 
 export class Matrix {
-  matrix = [[]]
+  m = [[]]
+  coordinates = new Map()
 
   constructor(matrix: any[][] = [[]]) {
-    this.matrix = matrix
+    this.m = matrix
+
+    for (let i = 0; i < matrix.length; i++) {
+      for (let j = 0; j < matrix[0].length; j++) {
+        this.coordinates.set(`${i},${j}`, matrix[i][j])
+      }
+    }
 
     // @ts-ignore
-    this.matrix.__proto__.toString = function () {
+    this.m.__proto__.toString = function () {
       return this.map((row) => row.join(' ') + '\n').join('')
     }
   }
@@ -20,31 +27,47 @@ export class Matrix {
   }
 
   rotateCW() {
-    this.matrix = this.matrix[0].map((_, colIndex) =>
-      this.matrix.map((row) => row[colIndex]).reverse()
-    )
+    this.m = this.m[0].map((_, colIndex) => this.m.map((row) => row[colIndex]).reverse())
+
+    const newCoordinates = new Map()
+    for (const [key, value] of this.coordinates) {
+      const [i, j] = key.split(',')
+      const new_i = j
+      const new_j = this.m[0].length - 1 - i
+      newCoordinates.set(`${new_i},${new_j}`, value)
+    }
+    this.coordinates = newCoordinates
+
     return this
   }
 
   rotateCCW() {
-    this.matrix = this.matrix[0].map((_, colIndex) =>
-      this.matrix.map((row) => row[row.length - 1 - colIndex])
-    )
+    this.m = this.m[0].map((_, colIndex) => this.m.map((row) => row[row.length - 1 - colIndex]))
+
+    const newCoordinates = new Map()
+    for (const [key, value] of this.coordinates) {
+      const [i, j] = key.split(',')
+      const new_i = this.m.length - 1 - j
+      const new_j = i
+      newCoordinates.set(`${new_i},${new_j}`, value)
+    }
+    this.coordinates = newCoordinates
+
     return this
   }
 
   flipHorizontal() {
-    this.matrix.reverse()
+    this.m.reverse()
     return this
   }
 
   flipVertical() {
-    this.matrix = this.matrix.map((row) => row.reverse())
+    this.m = this.m.map((row) => row.reverse())
     return this
   }
 
   transpose() {
-    this.matrix = this.matrix[0].map((_, colIndex) => this.matrix.map((row) => row[colIndex]))
+    this.m = this.m[0].map((_, colIndex) => this.m.map((row) => row[colIndex]))
     return this
   }
 
@@ -52,8 +75,8 @@ export class Matrix {
     let count = 0
     const searchWord = reversed ? word.split('').reverse().join('') : word
 
-    for (let i = 0; i < this.matrix.length; i++) {
-      let rowString = this.matrix[i].join('')
+    for (let i = 0; i < this.m.length; i++) {
+      let rowString = this.m[i].join('')
       let index = rowString.indexOf(searchWord)
 
       while (index !== -1) {
@@ -69,14 +92,14 @@ export class Matrix {
     let count = 0
     const searchWord = reversed ? word.split('').reverse().join('') : word
 
-    const rows = this.matrix.length
-    const cols = this.matrix[0].length
+    const rows = this.m.length
+    const cols = this.m[0].length
 
     for (let col = 0; col < cols; col++) {
       let columnString = ''
 
       for (let row = 0; row < rows; row++) {
-        columnString += this.matrix[row][col]
+        columnString += this.m[row][col]
       }
 
       let index = columnString.indexOf(searchWord)
@@ -95,8 +118,8 @@ export class Matrix {
     let count = 0
     const searchWord = reversed ? word.split('').reverse().join('') : word
     const regexp = new RegExp(`(?=${searchWord})`, 'gm') // Include overlapping matches
-    const rows = this.matrix.length
-    const cols = this.matrix[0].length
+    const rows = this.m.length
+    const cols = this.m[0].length
 
     for (let k = 0; k <= rows + cols - 2; k++) {
       let yMin = Math.max(0, k - (cols - 1))
@@ -104,7 +127,7 @@ export class Matrix {
       let diagonalString = ''
       for (let y = yMax; y >= yMin; y--) {
         let x = k - y
-        diagonalString += this.matrix[y][x]
+        diagonalString += this.m[y][x]
       }
 
       count += diagonalString.match(regexp)?.length ?? 0
@@ -117,8 +140,8 @@ export class Matrix {
     let count = 0
     const searchWord = reversed ? word.split('').reverse().join('') : word
     const regexp = new RegExp(`(?=${searchWord})`, 'gm') // Include overlapping matches
-    const rows = this.matrix.length
-    const cols = this.matrix[0].length
+    const rows = this.m.length
+    const cols = this.m[0].length
 
     for (let k = -(cols - 1); k <= rows - 1; k++) {
       let yMin = Math.max(0, k)
@@ -126,7 +149,7 @@ export class Matrix {
       let diagonalString = ''
       for (let y = yMin; y <= yMax; y++) {
         let x = y - k
-        diagonalString += this.matrix[y][x]
+        diagonalString += this.m[y][x]
       }
 
       count += diagonalString.match(regexp)?.length ?? 0
@@ -135,10 +158,10 @@ export class Matrix {
   }
 
   toArray() {
-    return this.matrix.reduce((acc, cur) => [...acc, ...cur], [])
+    return this.m.reduce((acc, cur) => [...acc, ...cur], [])
   }
 
   toString() {
-    return this.matrix.map((row) => row.join(' ') + '\n').join('')
+    return this.m.map((row) => row.join(' ') + '\n').join('')
   }
 }
